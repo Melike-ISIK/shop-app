@@ -104,6 +104,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: loginUser,
                       ),
                     ),
+                    SizedBox(height: 30),
+                    TextButton(
+                      child: Text('Hesabın yok mu? Kayıt ol.',
+                        style: TextStyle(
+                            decoration: TextDecoration.underline
+                        ),
+                      ),
+                      onPressed: (){
+                        Navigator.pushNamed(context, registerRoute);
+                      },
+                    )
                   ],
                 ),
               ),

@@ -8,3 +8,4 @@ const favoritesRoute = "/favorites";
 const productsByCategoryRoute = "/productsByCategory";
 const searchRoute = "/searchScreen";
 const productsByGenderRoute = "/productsByGender";
+const registerRoute = "/register";

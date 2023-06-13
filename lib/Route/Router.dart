@@ -12,6 +12,7 @@ import 'package:alisveris/Screens/NotFoundScreen.dart';
 import 'package:alisveris/Screens/ProductDetailScreen.dart';
 import 'package:alisveris/Screens/ProductsByCategoryScreen.dart';
 import 'package:alisveris/Screens/ProductsByGender.dart';
+import 'package:alisveris/Screens/RegisterScreen.dart';
 import 'package:alisveris/Screens/SearchScreen.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +29,7 @@ class Router{
       case productsByGenderRoute: return MaterialPageRoute(builder: (context) => ProductsByGender(gender: settings.arguments as Gender,));
       case productsByCategoryRoute: return MaterialPageRoute(builder: (context) => ProductsByCategoryScreen(category: settings.arguments as Category,));
       case productDetailRoute: return MaterialPageRoute(builder: (context) => ProductDetailScreen(product: settings.arguments as Product,));
+      case registerRoute: return MaterialPageRoute(builder: (context) => RegisterScreen());
       default:
         return MaterialPageRoute(builder: (context) => NotFoundScreen());
     }
