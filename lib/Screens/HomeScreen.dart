@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:alisveris/Components/CategoryCard.dart';
 import 'package:alisveris/Components/ProductCard.dart';
 import 'package:alisveris/Constants/RouteNames.dart';
@@ -8,6 +10,7 @@ import 'package:alisveris/Models/Product.dart';
 import 'package:alisveris/Models/UserLocation.dart';
 import 'package:alisveris/Services/GeoLocationService.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,11 +28,23 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  readLastLogins() async{
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      File file = File('${directory.path}/signedUsers.txt');
+      String fileContents = await file.readAsString();
+      print(fileContents);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getPrefs();
+    readLastLogins();
     userLocation = GetUserLocation();
   }
 

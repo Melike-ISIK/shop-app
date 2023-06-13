@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:alisveris/Constants/RouteNames.dart';
 import 'package:alisveris/Helpers/ToastHelper.dart';
 import 'package:alisveris/Services/AuthService.dart';
@@ -41,6 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
             preferences.setString('name', value.docs.first['name']);
             preferences.setString('email', value.docs.first['email']);
             preferences.setBool('isLogged', true);
+
+            final directory = await getApplicationDocumentsDirectory();
+            File file = File('${directory.path}/signedUsers.txt');
+            file.writeAsString('${DateTime.now()}, ${value.docs.first['name']}\n', mode: FileMode.append);
           });
         }
 
