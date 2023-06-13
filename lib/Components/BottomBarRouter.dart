@@ -14,7 +14,7 @@ class _BottomBarRouterState extends State<BottomBarRouter> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
 
-  static const List<Widget> _widgetOptions = <Widget>[
+  static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     FavoritesScreen()
   ];

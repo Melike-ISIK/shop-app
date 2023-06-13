@@ -5,11 +5,33 @@ import 'package:alisveris/Data/Data.dart';
 import 'package:alisveris/Models/Category.dart';
 import 'package:alisveris/Models/Gender.dart';
 import 'package:alisveris/Models/Product.dart';
+import 'package:alisveris/Models/UserLocation.dart';
+import 'package:alisveris/Services/GeoLocationService.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<UserLocation> userLocation;
+  late SharedPreferences prefs;
+
+  Future getPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPrefs();
+    userLocation = GetUserLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +201,22 @@ class HomeScreen extends StatelessWidget {
                       return CircularProgressIndicator();
                     }
 
-                    return Text('Kullanıcı: ${snapshot.data?.getString('username')}');
+                    return Column(
+                      children: [
+                        Container(width:double.infinity, child: Text('Kullanıcı: ${snapshot.data?.getString('name')}')),
+                        FutureBuilder(
+                          future: userLocation,
+                          builder: (context, AsyncSnapshot<UserLocation> snapshot){
+                            if(!snapshot.hasData) return CircularProgressIndicator();
+
+                            return Container(
+                                width:double.infinity,
+                                child: Text('Konum: ${snapshot.data!.city}, ${snapshot.data!.countryCode}')
+                            );
+                          },
+                        )
+                      ],
+                    );
                   },
                 )
               ),
