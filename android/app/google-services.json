@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "892495297652",
+    "project_id": "alisveris-b63ad",
+    "storage_bucket": "alisveris-b63ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892495297652:android:73165e5bdec855535f2521",
+        "android_client_info": {
+          "package_name": "com.melike.alisveris"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8Tcea7CVHzjM8eiqWnXGNHxp-EzxNWAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

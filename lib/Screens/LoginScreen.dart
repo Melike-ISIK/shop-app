@@ -1,6 +1,9 @@
 import 'package:alisveris/Constants/RouteNames.dart';
 import 'package:alisveris/Helpers/ToastHelper.dart';
+import 'package:alisveris/Services/AuthService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,14 +14,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController username = TextEditingController(text: "admin");
-  TextEditingController password = TextEditingController(text: "123");
+  AuthService _authService = AuthService();
+
+  TextEditingController email = TextEditingController(text: "melike@gmail.com");
+  TextEditingController password = TextEditingController(text: "123456");
 
   late SharedPreferences preferences;
 
   void getPreferences() async{
     preferences = await SharedPreferences.getInstance();
-}
+  }
 
 @override
   void initState() {
@@ -28,15 +33,23 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void loginUser(){
-    if(username.text == "admin" && password.text == "123"){
-      preferences.setString('username', username.text);
+    _authService.signIn(email.text, password.text).then((value) async{
+      if(value != null){
+        Stream<QuerySnapshot> snap = FirebaseFirestore.instance.collection('User').where('email', isEqualTo: email.text).snapshots();
+        if(!await snap.isEmpty){
+          snap.first.then((value) async{
+            preferences.setString('name', value.docs.first['name']);
+            preferences.setString('email', value.docs.first['email']);
+            preferences.setBool('isLogged', true);
+          });
+        }
 
-      ToastHelper().makeToastMessage('Giriş başarılı.');
-      Navigator.of(context).pop();
-      Navigator.pushNamed(context, bottomBarRoute);
-    }else{
-      ToastHelper().makeToastMessage('Kullanıcı adı veya şifre yanlış.');
-    }
+        Navigator.of(context).pop();
+        Navigator.pushNamed(context, bottomBarRoute);
+      }else{
+        ToastHelper().makeToastMessage('Kullanıcı adı veya parola yanlış.');
+      }
+    });
   }
 
   @override
@@ -64,10 +77,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     TextField(
-                      controller: username,
+                      controller: email,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Kullanıcı Adı'
+                          labelText: 'E-Mail'
                       ),
                     ),
                     SizedBox(height: 20),
