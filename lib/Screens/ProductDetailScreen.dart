@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:alisveris/Data/Favorites.dart';
 import 'package:alisveris/Helpers/FirebaseHelper.dart';
+import 'package:alisveris/Helpers/SQLiteHelper.dart';
+import 'package:alisveris/Models/Favorite.dart';
 import 'package:alisveris/Models/Product.dart';
 import 'package:alisveris/Models/ShoppingItem.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   FirebaseHelper _firebaseHelper = FirebaseHelper();
+  SQLiteHelper helper = SQLiteHelper.instance;
 
   @override
   void initState() {
@@ -155,26 +158,49 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       elevation: 0,
       actions: [
         Padding(
-          padding: EdgeInsets.only(right: 12),
-          child: InkWell(
-            onTap: (){
-              setState(() {
-                List<Product> favoriteList = Favorites().products;
+            padding: EdgeInsets.only(right: 12),
+            child: FutureBuilder(
+                future: helper.getFavorites(),
+                builder: (context, snapshot) {
+                  if(!snapshot.hasData) return CircularProgressIndicator();
 
-                bool isProductFavorited = favoriteList.where((Product element) => element.id == widget.product.id).isEmpty;
+                  List<Favorite>? favorites = snapshot.data;
 
-                if(isProductFavorited != false){
-                  Favorites().addFavorites(widget.product);
-                }else{
-                  Favorites().products.removeWhere((element) => element.id == widget.product.id);
+                  bool isFavorited = favorites!.where((element) => element.productId == widget.product.id).toList().isEmpty;
+
+                  return InkWell(
+                      onTap: () async{
+                        setState(() {
+                          if(isFavorited){
+                            helper.insertItem(Favorite(
+                                productId: widget.product.id
+                            ), SQLiteHelper.favoriteTable);
+                          }else{
+                            helper.removeItem(
+                                SQLiteHelper.favoriteTable,
+                                'productId',
+                                widget.product.id);
+                          }
+                        });
+                      },
+                      child: FutureBuilder(
+                        future: helper.getFavorites(),
+                        builder: (context, AsyncSnapshot<List<Favorite>> snapshot){
+                          if(!snapshot.hasData) return CircularProgressIndicator();
+
+                          List<Favorite>? favorites = snapshot.data;
+
+                          bool isFavorited = favorites!.where((element) => element.productId == widget.product.id).toList().isEmpty;
+
+                          return Icon(
+                            isFavorited ? Icons.favorite_border : Icons.favorite,
+                            color: Colors.deepOrangeAccent,
+                          );
+                        },
+                      )
+                  );
                 }
-              });
-            },
-            child: Icon(
-              Favorites().products.where((Product element) => element.id == widget.product.id).isEmpty ? Icons.favorite_border : Icons.favorite,
-              color: Colors.red,
-            ),
-          )
+            )
         )
       ],
     );
