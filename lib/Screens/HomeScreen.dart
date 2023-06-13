@@ -4,17 +4,19 @@ import 'package:alisveris/Components/CategoryCard.dart';
 import 'package:alisveris/Components/ProductCard.dart';
 import 'package:alisveris/Constants/RouteNames.dart';
 import 'package:alisveris/Data/Data.dart';
+import 'package:alisveris/Helpers/ToastHelper.dart';
 import 'package:alisveris/Models/Category.dart';
 import 'package:alisveris/Models/Gender.dart';
 import 'package:alisveris/Models/Product.dart';
 import 'package:alisveris/Models/UserLocation.dart';
+import 'package:alisveris/Services/AuthService.dart';
 import 'package:alisveris/Services/GeoLocationService.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -28,6 +30,15 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs = await SharedPreferences.getInstance();
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPrefs();
+    readLastLogins();
+    userLocation = GetUserLocation();
+  }
+
   readLastLogins() async{
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -37,15 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print(e.toString());
     }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getPrefs();
-    readLastLogins();
-    userLocation = GetUserLocation();
   }
 
   @override
@@ -81,8 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Senin için en iyi kıyafetler',
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey
+                      fontSize: 16,
+                      color: Colors.grey
                   ),
                 ),
               ),
@@ -106,17 +108,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(width: 15,),
                   SizedBox(
                     height: 55,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrangeAccent,
-                        elevation: 0
-                      ),
-                      child: Text(
-                        'Ara'
-                      ),
-                      onPressed: (){
-                        Navigator.pushNamed(context, searchRoute, arguments: search.text);
+                    child: GestureDetector(
+                      onTapCancel: (){
+                        ToastHelper().makeToastMessage('Arama yapmaktan vazgeçtiniz.');
                       },
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepOrangeAccent,
+                            elevation: 0
+                        ),
+                        child: Text(
+                            'Ara'
+                        ),
+                        onPressed: (){
+                          Navigator.pushNamed(context, searchRoute, arguments: search.text);
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -133,12 +140,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (BuildContext context, int index){
                     Category category = appData.categories[index];
 
-                    return CategoryCard(
-                      imagePath: category.imagePath,
-                      name: category.name,
-                      onTap: (){
-                        Navigator.pushNamed(context, productsByCategoryRoute, arguments: category);
+                    int length = appData.products.where((element) => element.category.id == category.id).length;
+
+                    return GestureDetector(
+                      onLongPress: (){
+                        ToastHelper().makeToastMessage('Bu kategoride ${length} adet ürün var.');
                       },
+                      child: CategoryCard(
+                        imagePath: category.imagePath,
+                        name: category.name,
+                        onTap: (){
+                          Navigator.pushNamed(context, productsByCategoryRoute, arguments: category);
+                        },
+                      ),
                     );
                   },
                 ),
@@ -199,79 +213,84 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Drawer CreateDrawer(BuildContext context){
     return Drawer(
-      child: Column(
-        children: [
-          ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.deepOrangeAccent,
+        child: Column(
+          children: [
+            ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrangeAccent,
+                    ),
+                    child: FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot){
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return CircularProgressIndicator();
+                        }
+
+                        return Column(
+                          children: [
+                            Container(width:double.infinity, child: Text('Kullanıcı: ${snapshot.data?.getString('name')}')),
+                            FutureBuilder(
+                              future: userLocation,
+                              builder: (context, AsyncSnapshot<UserLocation> snapshot){
+                                if(!snapshot.hasData) return CircularProgressIndicator();
+
+                                return Container(
+                                    width:double.infinity,
+                                    child: Text('Konum: ${snapshot.data!.city}, ${snapshot.data!.countryCode}')
+                                );
+                              },
+                            )
+                          ],
+                        );
+                      },
+                    )
                 ),
-                child: FutureBuilder(
-                  future: SharedPreferences.getInstance(),
-                  builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot){
-                    if(snapshot.connectionState == ConnectionState.waiting){
-                      return CircularProgressIndicator();
-                    }
-
-                    return Column(
-                      children: [
-                        Container(width:double.infinity, child: Text('Kullanıcı: ${snapshot.data?.getString('name')}')),
-                        FutureBuilder(
-                          future: userLocation,
-                          builder: (context, AsyncSnapshot<UserLocation> snapshot){
-                            if(!snapshot.hasData) return CircularProgressIndicator();
-
-                            return Container(
-                                width:double.infinity,
-                                child: Text('Konum: ${snapshot.data!.city}, ${snapshot.data!.countryCode}')
-                            );
-                          },
-                        )
-                      ],
-                    );
+                ListTile(
+                  title: const Text('Ana Sayfa'),
+                  onTap: () {
+                    // Update the state of the app.
+                    // ...
+                  },
+                ),
+                ListTile(
+                  title: const Text('Kategoriler'),
+                  onTap: () {
+                    Navigator.pushNamed(context, categoriesRoute);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Kadın'),
+                  onTap: () {
+                    Navigator.pushNamed(context, productsByGenderRoute, arguments: Gender.Female);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Erkek'),
+                  onTap: () {
+                    Navigator.pushNamed(context, productsByGenderRoute, arguments: Gender.Male);
                   },
                 )
-              ),
-              ListTile(
-                title: const Text('Ana Sayfa'),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
-              ListTile(
-                title: const Text('Kategoriler'),
-                onTap: () {
-                  Navigator.pushNamed(context, categoriesRoute);
-                },
-              ),
-              ListTile(
-                title: const Text('Kadın'),
-                onTap: () {
-                  Navigator.pushNamed(context, productsByGenderRoute, arguments: Gender.Female);
-                },
-              ),
-              ListTile(
-                title: const Text('Erkek'),
-                onTap: () {
-                  Navigator.pushNamed(context, productsByGenderRoute, arguments: Gender.Male);
-                },
-              )
-            ],
-          ),
-          Spacer(),
-          ListTile(
-            title: const Text('Çıkış'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, loginRoute);
-            },
-          ),
-        ],
-      )
+              ],
+            ),
+            Spacer(),
+            ListTile(
+              title: const Text('Çıkış'),
+              onTap: () {
+                AuthService _authService = AuthService();
+                _authService.signOut();
+
+                prefs.setBool('isLogged', false);
+
+                Navigator.pop(context);
+                Navigator.pushNamed(context, loginRoute);
+              },
+            ),
+          ],
+        )
     );
   }
 
@@ -279,9 +298,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppBar(
       iconTheme: IconThemeData(color: Colors.black),
       title: Text(
-          'Ana Sayfa',
+        'Ana Sayfa',
         style: TextStyle(
-          color: Colors.black
+            color: Colors.black
         ),
       ),
       backgroundColor: Colors.transparent,

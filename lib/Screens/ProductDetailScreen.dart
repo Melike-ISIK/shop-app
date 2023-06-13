@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:alisveris/Data/Favorites.dart';
+import 'package:alisveris/Helpers/FirebaseHelper.dart';
 import 'package:alisveris/Models/Product.dart';
+import 'package:alisveris/Models/ShoppingItem.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +16,7 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  FirebaseHelper _firebaseHelper = FirebaseHelper();
 
   @override
   void initState() {
@@ -26,17 +31,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: Column(
         children: [
           Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(35))
-              ),
-              width: double.infinity,
-                height: 320,
-              child: Image.asset(
-                widget.product.imagePath,
-                fit: BoxFit.contain,
-              )
+            child: Stack(
+                children: [
+                  Hero(
+                    tag: 'product-${widget.product.name}',
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.vertical(bottom: Radius.circular(35))
+                        ),
+                        width: double.infinity,
+                        height: 320,
+                        child: Image.asset(
+                          widget.product.imagePath,
+                          fit: BoxFit.contain,
+                        )
+                    ),
+                  ),
+                  if(widget.product.isDiscounted) IndirimWidget()
+                ]
             ),
           ),
           SizedBox(height: 30,),
@@ -92,8 +105,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                       onPressed: (){
+                        late StreamSubscription cartSubscription;
 
-                      },
+                        cartSubscription =
+                            _firebaseHelper.StreamCart().listen((cartListFromFirestore){
+                                List<ShoppingItem> items = cartListFromFirestore.where((element) => element.productId == widget.product.id).toList();
+                                if(items.isEmpty) {
+                                  _firebaseHelper.AddCart(ShoppingItem(
+                                    docId: '',
+                                    amount: widget.product.amount,
+                                    name:  widget.product.name,
+                                    imagePath: widget.product.imagePath,
+                                    quantity: 1,
+                                    productId: widget.product.id,));
+                                }else{
+                                  _firebaseHelper.UpdateCart(ShoppingItem(
+                                    amount: items.first.amount,
+                                    docId: items.first.docId,
+                                    name: items.first.name,
+                                    productId: items.first.productId,
+                                    imagePath: items.first.imagePath,
+                                    quantity: items.first.quantity + 1,
+                                  ));}
+                                cartSubscription.cancel();
+                              },
+                            );
+                        },
                     ),
                   )
                 ],
@@ -140,6 +177,49 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           )
         )
       ],
+    );
+  }
+}
+
+class IndirimWidget extends StatefulWidget {
+  const IndirimWidget({Key? key}) : super(key: key);
+
+  @override
+  State<IndirimWidget> createState() => _IndirimWidgetState();
+}
+
+class _IndirimWidgetState extends State<IndirimWidget> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation _backgroundColorTween;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _backgroundColorTween = ColorTween(begin: Colors.red, end: Colors.yellow).animate(_controller);
+    _controller.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _backgroundColorTween,
+      builder:(context, child){
+        return Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+              color: _backgroundColorTween.value,
+              borderRadius: BorderRadius.only(bottomRight: Radius.circular(12))
+          ),
+          child: Transform.rotate(angle:50.15,child: Text('İNDİRİM!', style: TextStyle(fontWeight: FontWeight.bold),)),
+        );
+      },
     );
   }
 }

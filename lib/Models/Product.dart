@@ -10,6 +10,7 @@ class Product{
   Category category;
   Gender gender;
   DateTime createdAt;
+  bool isDiscounted;
 
   Product({
     required this.name,
@@ -20,5 +21,6 @@ class Product{
     required this.category,
     required this.gender,
     required this.createdAt,
+    required this.isDiscounted,
   });
 }

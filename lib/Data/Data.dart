@@ -40,6 +40,7 @@ class Data{
         imagePath: 'assets/products/product_0.png',
         gender: Gender.Male,
         createdAt: new DateTime(2001, 3, 28),
+        isDiscounted:false,
       ),
       Product(
         id: 2,
@@ -50,6 +51,7 @@ class Data{
         imagePath: 'assets/products/product_1.png',
         gender: Gender.Male,
         createdAt: new DateTime(2001, 3, 26),
+        isDiscounted:true,
       ),
       Product(
         id: 3,
@@ -60,6 +62,7 @@ class Data{
         imagePath: 'assets/products/product_2.png',
         gender: Gender.Female,
         createdAt: new DateTime(2000, 2, 9),
+        isDiscounted:false,
       ),
       Product(
         id: 4,
@@ -70,6 +73,7 @@ class Data{
         imagePath: 'assets/products/product_3.png',
         gender: Gender.Female,
         createdAt: new DateTime(2002, 5, 14),
+        isDiscounted:true,
       ),
       Product(
         id: 5,
@@ -80,6 +84,7 @@ class Data{
         imagePath: 'assets/products/product_4.png',
         gender: Gender.Male,
         createdAt: new DateTime(1998, 5, 14),
+        isDiscounted:false,
       ),
       Product(
         id: 6,
@@ -90,6 +95,7 @@ class Data{
         imagePath: 'assets/products/product_5.png',
         gender: Gender.Male,
         createdAt: new DateTime(1998, 5, 14),
+        isDiscounted:false,
       ),
       Product(
         id: 7,
@@ -100,6 +106,7 @@ class Data{
         imagePath: 'assets/products/product_6.png',
         gender: Gender.Male,
         createdAt: new DateTime(1998, 5, 14),
+        isDiscounted:true,
       ),
       Product(
         id: 8,
@@ -110,6 +117,7 @@ class Data{
         imagePath: 'assets/products/product_7.png',
         gender: Gender.Male,
         createdAt: new DateTime(1998, 5, 14),
+        isDiscounted:false,
       ),
       Product(
         id: 9,
@@ -120,6 +128,7 @@ class Data{
         imagePath: 'assets/products/product_8.png',
         gender: Gender.Female,
         createdAt: new DateTime(1998, 5, 14),
+        isDiscounted:false,
       ),
       Product(
         id: 10,
@@ -130,6 +139,7 @@ class Data{
         imagePath: 'assets/products/product_9.png',
         gender: Gender.Female,
         createdAt: new DateTime(1998, 5, 14),
+        isDiscounted:true,
       ),
     ];
   }

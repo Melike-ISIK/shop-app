@@ -21,22 +21,25 @@ class ProductCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Spacer(),
-            Image.asset(
-              imagePath,
-              width: 120,
-              height: 120,
+            Hero(
+              tag: 'product-${name}',
+              child: Image.asset(
+                imagePath,
+                width: 120,
+                height: 120,
+              ),
             ),
             Spacer(),
             Text(
               name,
               style: TextStyle(
-                  fontSize: 12,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 6,),
             Text(
-              "${amount.toString()} ₺"
+                "${amount.toString()} ₺"
             ),
             Spacer(),
           ],
