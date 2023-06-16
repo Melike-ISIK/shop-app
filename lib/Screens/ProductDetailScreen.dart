@@ -1,13 +1,11 @@
 import 'dart:async';
-
-import 'package:alisveris/Data/Favorites.dart';
 import 'package:alisveris/Helpers/FirebaseHelper.dart';
 import 'package:alisveris/Helpers/SQLiteHelper.dart';
 import 'package:alisveris/Models/Favorite.dart';
 import 'package:alisveris/Models/Product.dart';
 import 'package:alisveris/Models/ShoppingItem.dart';
+import 'package:alisveris/Screens/ProductCommentsScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   Product product;
@@ -18,8 +16,6 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  FirebaseHelper _firebaseHelper = FirebaseHelper();
-  SQLiteHelper helper = SQLiteHelper.instance;
 
   @override
   void initState() {
@@ -27,11 +23,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     super.initState();
   }
 
+  FirebaseHelper _firebaseHelper = FirebaseHelper();
+  SQLiteHelper helper = SQLiteHelper.instance;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CreateAppBar(),
-      body: Column(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+          appBar: CreateAppBar(),
+          body: TabBarView(
+            children: [
+              ProductContent(),
+              ProductCommentsScreen(product: widget.product,)
+            ],
+          )
+      ),
+    );
+  }
+
+  GestureDetector ProductContent(){
+    return GestureDetector(
+      onVerticalDragEnd: (DragEndDetails? details){
+        Navigator.of(context).pop();
+      },
+      child: Column(
         children: [
           Center(
             child: Stack(
@@ -66,12 +82,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              widget.product.name,
-                              style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold
-                              ),
+                            child: Wrap(
+                                children:[
+                                  Text(
+                                    widget.product.name,
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ]
                             ),
                           ),
                           Text(
@@ -90,28 +110,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Spacer(),
                   Container(
                     width: MediaQuery.of(context).size.width * 0.70,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrangeAccent,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        )
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          'Sepete Ekle',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold
+                    child: GestureDetector(
+                      onHorizontalDragEnd: (DragEndDetails? details){
+
+                      },
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepOrangeAccent,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            )
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                            'Sepete Ekle',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold
+                            ),
                           ),
                         ),
-                      ),
-                      onPressed: (){
-                        late StreamSubscription cartSubscription;
+                        onPressed: (){
+                          late StreamSubscription cartSubscription;
 
-                        cartSubscription =
-                            _firebaseHelper.StreamCart().listen((cartListFromFirestore){
+                          cartSubscription =
+                              _firebaseHelper.StreamCart().listen((cartListFromFirestore){
                                 List<ShoppingItem> items = cartListFromFirestore.where((element) => element.productId == widget.product.id).toList();
                                 if(items.isEmpty) {
                                   _firebaseHelper.AddCart(ShoppingItem(
@@ -132,8 +156,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   ));}
                                 cartSubscription.cancel();
                               },
-                            );
+                              );
                         },
+                      ),
                     ),
                   )
                 ],
@@ -156,6 +181,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
       backgroundColor: Colors.transparent,
       elevation: 0,
+      bottom: TabBar(
+        indicatorColor: Colors.deepOrangeAccent,
+        tabs: [
+          Tab(icon: Icon(Icons.explore, color: Colors.deepOrangeAccent,)),
+          Tab(icon: Icon(Icons.comment, color: Colors.deepOrangeAccent,)),
+        ],
+      ),
       actions: [
         Padding(
             padding: EdgeInsets.only(right: 12),

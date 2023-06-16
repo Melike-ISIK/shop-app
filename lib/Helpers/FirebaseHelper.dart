@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:alisveris/Models/Comment.dart';
 import 'package:alisveris/Models/ShoppingItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -58,6 +59,27 @@ class FirebaseHelper {
         "imagePath": model.imagePath,
         "quantity": model.quantity,
         "productId": model.productId
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Stream<List<Comment>> StreamProductComments(int productId) {
+    try {
+      return _firestore
+          .collection("Product")
+          .doc(productId.toString())
+          .collection("Comments")
+          .orderBy('date', descending: true)
+          .snapshots()
+          .map((query) {
+        final List<Comment> commentList = <Comment>[];
+
+        for (final DocumentSnapshot doc in query.docs) {
+          commentList.add(Comment.fromDocumentSnapshot(doc));
+        }
+        return commentList;
       });
     } catch (e) {
       rethrow;
