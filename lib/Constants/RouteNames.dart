@@ -9,3 +9,6 @@ const productsByCategoryRoute = "/productsByCategory";
 const searchRoute = "/searchScreen";
 const productsByGenderRoute = "/productsByGender";
 const registerRoute = "/register";
+const userProfileRoute = "/userProfile";
+const userAddressRoute = "/userAdress";
+const addAddressRoute = "/addAddress";

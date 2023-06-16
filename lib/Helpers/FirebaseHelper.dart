@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:alisveris/Models/Address.dart';
 import 'package:alisveris/Models/Comment.dart';
 import 'package:alisveris/Models/ShoppingItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,6 +81,59 @@ class FirebaseHelper {
           commentList.add(Comment.fromDocumentSnapshot(doc));
         }
         return commentList;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> AddAddress(Address model) async {
+    CollectionReference ref =
+    await FirebaseFirestore.instance.collection('User').doc(_auth.currentUser?.uid).collection("Address");
+
+    String docId=ref.doc().id;
+
+    try {
+      ref.doc(docId).set({
+        'docId': docId,
+        'name': model.name,
+        'surname': model.surname,
+        'address': model.address,
+        'city': model.city,
+        'country': model.country,
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> DeleteAddress(Address model) async {
+    try {
+      _firestore.collection("User")
+          .doc(_auth.currentUser?.uid)
+          .collection("Address")
+          .doc(model.docId)
+          .delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Stream<List<Address>> StreamAddress() {
+    try {
+      return _firestore
+          .collection("User")
+          .doc(_auth.currentUser?.uid)
+          .collection("Address")
+          .snapshots()
+          .map((query) {
+        final List<Address> retVal = <Address>[];
+
+        for (final DocumentSnapshot doc in query.docs) {
+          retVal.add(Address.fromDocumentSnapshot(doc));
+        }
+
+        return retVal;
       });
     } catch (e) {
       rethrow;

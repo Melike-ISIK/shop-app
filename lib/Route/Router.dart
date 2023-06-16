@@ -3,6 +3,7 @@ import 'package:alisveris/Constants/RouteNames.dart';
 import 'package:alisveris/Models/Gender.dart';
 import 'package:alisveris/Models/Product.dart';
 import 'package:alisveris/Models/Category.dart';
+import 'package:alisveris/Screens/AddAddressScreen.dart';
 import 'package:alisveris/Screens/AllProductsScreen.dart';
 import 'package:alisveris/Screens/CategoriesScreen.dart';
 import 'package:alisveris/Screens/FavoritesScreen.dart';
@@ -14,6 +15,8 @@ import 'package:alisveris/Screens/ProductsByCategoryScreen.dart';
 import 'package:alisveris/Screens/ProductsByGender.dart';
 import 'package:alisveris/Screens/RegisterScreen.dart';
 import 'package:alisveris/Screens/SearchScreen.dart';
+import 'package:alisveris/Screens/UserAddressScreen.dart';
+import 'package:alisveris/Screens/UserProfileScreen.dart';
 import 'package:flutter/material.dart';
 
 class Router{
@@ -30,6 +33,9 @@ class Router{
       case productsByCategoryRoute: return MaterialPageRoute(builder: (context) => ProductsByCategoryScreen(category: settings.arguments as Category,));
       case productDetailRoute: return MaterialPageRoute(builder: (context) => ProductDetailScreen(product: settings.arguments as Product,));
       case registerRoute: return MaterialPageRoute(builder: (context) => RegisterScreen());
+      case userProfileRoute: return MaterialPageRoute(builder: (context) => UserProfileScreen());
+      case userAddressRoute: return MaterialPageRoute(builder: (context) => UserAddressScreen());
+      case addAddressRoute: return MaterialPageRoute(builder: (context) => AddAddressScreen());
       default:
         return MaterialPageRoute(builder: (context) => NotFoundScreen());
     }

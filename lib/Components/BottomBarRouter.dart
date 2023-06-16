@@ -1,5 +1,6 @@
 import 'package:alisveris/Screens/FavoritesScreen.dart';
 import 'package:alisveris/Screens/HomeScreen.dart';
+import 'package:alisveris/Screens/UserProfileScreen.dart';
 import 'package:flutter/material.dart';
 
 class BottomBarRouter extends StatefulWidget {
@@ -16,7 +17,8 @@ class _BottomBarRouterState extends State<BottomBarRouter> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    FavoritesScreen()
+    FavoritesScreen(),
+    UserProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -40,6 +42,10 @@ class _BottomBarRouterState extends State<BottomBarRouter> {
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: 'Favoriler',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
