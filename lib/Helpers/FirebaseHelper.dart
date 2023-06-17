@@ -66,6 +66,41 @@ class FirebaseHelper {
     }
   }
 
+  Future<void> DeleteCart(ShoppingItem model) async {
+    try {
+      _firestore.collection("User")
+          .doc(_auth.currentUser?.uid)
+          .collection("cart")
+          .doc(model.docId)
+          .delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Stream<double> CalculateTotalPrice() {
+    try {
+      return _firestore
+          .collection("User")
+          .doc(_auth.currentUser?.uid)
+          .collection("cart")
+          .snapshots()
+          .map((query) {
+        double totalPrice = 0;
+
+        for (final DocumentSnapshot doc in query.docs) {
+          Map<String, dynamic> data = (doc.data() as Map<String, dynamic>);
+
+          totalPrice += data['amount'] * data['quantity'];
+        }
+
+        return totalPrice;
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Stream<List<Comment>> StreamProductComments(int productId) {
     try {
       return _firestore

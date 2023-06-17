@@ -1,3 +1,4 @@
+import 'package:alisveris/Screens/CartScreen.dart';
 import 'package:alisveris/Screens/FavoritesScreen.dart';
 import 'package:alisveris/Screens/HomeScreen.dart';
 import 'package:alisveris/Screens/UserProfileScreen.dart';
@@ -15,9 +16,10 @@ class _BottomBarRouterState extends State<BottomBarRouter> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
 
-  static List<Widget> _widgetOptions = <Widget>[
+  static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     FavoritesScreen(),
+    CartScreen(),
     UserProfileScreen(),
   ];
 
@@ -44,12 +46,21 @@ class _BottomBarRouterState extends State<BottomBarRouter> {
             label: 'Favoriler',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Sepet',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        unselectedLabelStyle: TextStyle(
+            color: Colors.grey
+        ),
         onTap: _onItemTapped,
       ),
     );
