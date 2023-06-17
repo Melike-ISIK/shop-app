@@ -12,3 +12,4 @@ const registerRoute = "/register";
 const userProfileRoute = "/userProfile";
 const userAddressRoute = "/userAdress";
 const addAddressRoute = "/addAddress";
+const chooseAddressRoute = "/chooseAddress";

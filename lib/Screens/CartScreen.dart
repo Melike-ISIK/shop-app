@@ -1,3 +1,4 @@
+import 'package:alisveris/Constants/RouteNames.dart';
 import 'package:alisveris/Helpers/FirebaseHelper.dart';
 import 'package:alisveris/Helpers/ToastHelper.dart';
 import 'package:alisveris/Models/ShoppingItem.dart';
@@ -143,7 +144,7 @@ class _CartScreenState extends State<CartScreen> {
                                     if(snapshot.data == 0){
                                       ToastHelper().makeToastMessage('Sepetinizde ürün bulunmamaktadır.');
                                     }else{
-
+                                      Navigator.pushNamed(context, chooseAddressRoute);
                                     }
                                   },
                                 )
