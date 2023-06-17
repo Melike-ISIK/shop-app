@@ -174,4 +174,38 @@ class FirebaseHelper {
       rethrow;
     }
   }
+
+  Future<void> AddOrder(docId) async {
+    double totalAmount = 0;
+    late StreamSubscription calculateTotalPriceSubscription;
+    calculateTotalPriceSubscription =
+        CalculateTotalPrice().listen((totalAmountFromFirestore) {
+          totalAmount = totalAmountFromFirestore;
+          calculateTotalPriceSubscription.cancel();
+        });
+
+    late StreamSubscription cartSubscription;
+
+    cartSubscription = StreamCart().listen((items) {
+      try {
+        _firestore.collection("User")
+            .doc(_auth.currentUser?.uid)
+            .collection("order")
+            .add({
+          'products': items.map<Map>((e) => e.toMap()).toList(),
+          'totalAmount': totalAmount,
+          'addressDocId': docId,
+        });
+
+        items.forEach((element) {
+          DeleteCart(element);
+        });
+
+        cartSubscription.cancel();
+      } catch (e) {
+        cartSubscription.cancel();
+        rethrow;
+      }
+    });
+  }
 }

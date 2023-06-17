@@ -11,6 +11,7 @@ import 'package:alisveris/Screens/FavoritesScreen.dart';
 import 'package:alisveris/Screens/HomeScreen.dart';
 import 'package:alisveris/Screens/LoginScreen.dart';
 import 'package:alisveris/Screens/NotFoundScreen.dart';
+import 'package:alisveris/Screens/OrderCompletedScreen.dart';
 import 'package:alisveris/Screens/ProductDetailScreen.dart';
 import 'package:alisveris/Screens/ProductsByCategoryScreen.dart';
 import 'package:alisveris/Screens/ProductsByGender.dart';
@@ -38,6 +39,7 @@ class Router{
       case userAddressRoute: return MaterialPageRoute(builder: (context) => UserAddressScreen());
       case addAddressRoute: return MaterialPageRoute(builder: (context) => AddAddressScreen());
       case chooseAddressRoute: return MaterialPageRoute(builder: (context) => ChooseAddressScreen());
+      case orderCompletedRoute: return MaterialPageRoute(builder: (context) => OrderCompletedScreen());
       default:
         return MaterialPageRoute(builder: (context) => NotFoundScreen());
     }

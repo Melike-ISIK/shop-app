@@ -104,7 +104,8 @@ class _ChooseAddressScreenState extends State<ChooseAddressScreen> {
                               ),
                             ),
                             onPressed: (){
-
+                              Navigator.pushNamed(context, orderCompletedRoute);
+                              _firebaseHelper.AddOrder(choosevalue);
                             },
                           ))
                     ],
