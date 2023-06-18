@@ -85,17 +85,52 @@ class _ProductCommentsScreenState extends State<ProductCommentsScreen> {
                   return ListTile(
                     leading: Container(
                       width: 45,
-                      child: Image(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            'https://api.multiavatar.com/${comment.name}.png'),
-                        errorBuilder: (context, object, stackTrace){
-                          return Icon(Icons.person, size:75);
+                      child: GestureDetector(
+                        onDoubleTap: () {
+                          showDialog<void>(
+                            context: context,
+                            barrierDismissible: false, // user must tap button!
+                            builder: (BuildContext context) {
+                              return AlertDialog( // <-- SEE HERE
+                                title: const Text('Profil Fotoğrafı'),
+                                content: SingleChildScrollView(
+                                  child: Image(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(
+                                        'https://api.multiavatar.com/${comment.name}.png'),
+                                    errorBuilder: (context, object, stackTrace){
+                                      return Icon(Icons.person, size:75);
+                                    },
+                                    loadingBuilder: (context, child, loadingProgress){
+                                      if(loadingProgress == null) return child;
+                                      return CircularProgressIndicator();
+                                    },
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('Tamam'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
-                        loadingBuilder: (context, child, loadingProgress){
-                          if(loadingProgress == null) return child;
-                          return CircularProgressIndicator();
-                        },
+                        child: Image(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(
+                              'https://api.multiavatar.com/${comment.name}.png'),
+                          errorBuilder: (context, object, stackTrace){
+                            return Icon(Icons.person, size:75);
+                          },
+                          loadingBuilder: (context, child, loadingProgress){
+                            if(loadingProgress == null) return child;
+                            return CircularProgressIndicator();
+                          },
+                        ),
                       ),
                     ),
                     title: Text(comment.name),
@@ -124,17 +159,17 @@ class _ProductCommentsScreenState extends State<ProductCommentsScreen> {
                     child: CircleAvatar(
                         backgroundColor: Colors.deepOrangeAccent,
                         child: Image(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                              'https://api.multiavatar.com/${userName}.png'),
-                          errorBuilder: (context, object, stackTrace){
-                            return Icon(Icons.person, size:75);
-                          },
-                          loadingBuilder: (context, child, loadingProgress){
-                            if(loadingProgress == null) return child;
-                            return CircularProgressIndicator();
-                          },
-                        )
+                            fit: BoxFit.cover,
+                            image: NetworkImage(
+                                'https://api.multiavatar.com/${userName}.png'),
+                            errorBuilder: (context, object, stackTrace){
+                              return Icon(Icons.person, size:75);
+                            },
+                            loadingBuilder: (context, child, loadingProgress){
+                              if(loadingProgress == null) return child;
+                              return CircularProgressIndicator();
+                            },
+                          ),
                     ),
                   ),
                   SizedBox(

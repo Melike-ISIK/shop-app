@@ -64,7 +64,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: Image.asset(
                           widget.product.imagePath,
                           fit: BoxFit.contain,
-                        )
+                        ),
                     ),
                   ),
                   if(widget.product.isDiscounted) IndirimWidget()
